@@ -16,15 +16,10 @@
 package com.adaptris.transform.ff;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.StringReader;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import com.adaptris.transform.Source;
-import com.adaptris.transform.Target;
-import com.adaptris.transform.TransformFramework;
 
 public class TransformFrameworkTest extends TransformFramework {
 

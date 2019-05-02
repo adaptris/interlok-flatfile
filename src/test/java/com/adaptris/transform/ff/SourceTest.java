@@ -17,13 +17,10 @@ package com.adaptris.transform.ff;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import java.io.StringReader;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import com.adaptris.transform.Source;
 
 public class SourceTest {
 
