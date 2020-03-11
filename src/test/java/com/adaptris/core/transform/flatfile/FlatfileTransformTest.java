@@ -16,12 +16,17 @@
 
 package com.adaptris.core.transform.flatfile;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
@@ -66,14 +71,15 @@ public class FlatfileTransformTest extends TransformServiceExample {
   private static final String XPATH_TRL_RECORD_TYPE = "/root/segment_Document/segment_Trailer/record_TRL/RecordType";
   private static final String XPATH_HDR_SOURCE_DESCRIPTION = "/root/segment_Document/segment_Header/record_HDR/SourceDescription";
 
-  public FlatfileTransformTest(String name) {
-    super(name);
+  public FlatfileTransformTest() {
+    super();
   }
 
-  @Override
+  @Before
   public void setUp() throws Exception {
   }
 
+  @Test
   public void testDoService() throws Exception {
     AdaptrisMessage m = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
     FlatfileTransformService service = createService();
@@ -81,6 +87,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     assertXml(m);
   }
 
+  @Test
   public void testDoServiceWithCache() throws Exception {
     PROPERTIES.getProperty(KEY_FF_TEST_INPUT);
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
@@ -100,6 +107,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testDoServiceWithCacheDisabled() throws Exception {
     PROPERTIES.getProperty(KEY_FF_TEST_INPUT);
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
@@ -118,6 +126,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testDoServiceFileBackedMessage() throws Exception {
     AdaptrisMessage m = MessageHelper.createMessage(new FileBackedMessageFactory(),
         PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
@@ -126,6 +135,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     assertXml(m);
   }
 
+  @Test
   public void testDoServiceWithOverrideNotAllowed() throws Exception {
     FlatfileTransformService service = new FlatfileTransformService();
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
@@ -139,6 +149,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testDoServiceWithOverrideAllowed() throws Exception {
     FlatfileTransformService service = new FlatfileTransformService();
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
@@ -149,6 +160,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     assertXml(msg);
   }
 
+  @Test
   public void testDoServiceWithOverrideAllowedAndNoCache() throws Exception {
     FlatfileTransformService service = new FlatfileTransformService();
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
@@ -170,6 +182,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testDoServiceWithOverrideAllowedNoMetataKey() throws Exception {
     FlatfileTransformService service = new FlatfileTransformService();
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
@@ -183,6 +196,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testDoService_ISO8859_IncorrectFactoryEncoding() throws Exception {
     FlatfileTransformService service = createService();
     DefaultMessageFactory factory = new DefaultMessageFactory();
@@ -197,6 +211,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
 
   }
 
+  @Test
   public void testDoService_ISO8859_1() throws Exception {
     FlatfileTransformService service = createService();
     DefaultMessageFactory factory = new DefaultMessageFactory();
@@ -210,6 +225,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     assertEquals(createISOString(7), xp.selectSingleTextItem(doc, XPATH_HDR_SOURCE_DESCRIPTION));
   }
 
+  @Test
   public void testIssue2661() throws Exception {
     FlatfileTransformService service = new FlatfileTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_ISSUE_2661_DEFINITION));
@@ -229,6 +245,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     assertEquals(srcValue, destValue);
   }
 
+  @Test
   public void testIssue2661_WithoutOutputMessageEncoding() throws Exception {
     FlatfileTransformService service = new FlatfileTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_ISSUE_2661_DEFINITION));
@@ -303,4 +320,8 @@ public class FlatfileTransformTest extends TransformServiceExample {
     return builder.parse(new InputSource(in));
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 }
