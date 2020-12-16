@@ -289,6 +289,8 @@ publishing {
         properties.appendNode("target", "3.9.0+")
         properties.appendNode("tags", "transform,flatfile")
         properties.appendNode("license", "false")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok-flatfile")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok-flatfile/raw/develop/README.md")
       }
     }
   }
