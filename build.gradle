@@ -284,8 +284,8 @@ publishing {
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", "Transformation of Flat files into XML")
+        asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/pages/cookbook/cookbook-flatfile-transform")
         def properties = asNode().appendNode("properties")
-        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/cookbook-flatfile-transform.html")
         properties.appendNode("target", "3.9.0+")
         properties.appendNode("tags", "transform,flatfile")
         properties.appendNode("license", "false")
