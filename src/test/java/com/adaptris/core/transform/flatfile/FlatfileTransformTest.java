@@ -1,46 +1,52 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.transform.flatfile;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
+
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.junit.Before;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.MessageHelper;
-import com.adaptris.core.transform.TransformServiceExample;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
+import com.adaptris.interlok.junit.scaffolding.services.TransformServiceExample;
 import com.adaptris.util.text.xml.XPath;
 
-@SuppressWarnings("deprecation")
 public class FlatfileTransformTest extends TransformServiceExample {
 
   private static final String ISO_8859_1 = "ISO-8859-1";
@@ -50,14 +56,14 @@ public class FlatfileTransformTest extends TransformServiceExample {
   static final String KEY_FF_TEST_INPUT_ISO = "FlatfileTransformService.inputFile_ISO_8859";
 
   // This is the FF input; and is replicated in what's stored in KEY_FF_INPUT
-  private static final String TEST_INPUT_HDR_LINE = "HDRSRC20110601THE TITLE OF DOCSrcDescDestinationDesc  1234567890  ";
-  private static final String TEST_INPUT_TRAILER_ = "TRL00000005                                                       ";
-  private static final String LINE_SEPARATOR = System.lineSeparator();
+  // private static final String TEST_INPUT_HDR_LINE = "HDRSRC20110601THE TITLE OF DOCSrcDescDestinationDesc 1234567890 ";
+  // private static final String TEST_INPUT_TRAILER_ = "TRL00000005 ";
+  // private static final String LINE_SEPARATOR = System.lineSeparator();
 
   // These detail fields are never used, but included for completeness.
-  private static final String TEST_INPUT_DETAIL_1 = "DETField   1.01Field  1.02Field     1.0320110630Field   1.04400821";
-  private static final String TEST_INPUT_DETAIL_2 = "DETField   2.01Field  2.02Field     2.0320110630Field   2.04400821";
-  private static final String TEST_INPUT_DETAIL_3 = "DETField   2.01Field  2.02Field     2.0320110630Field   2.04400821";
+  // private static final String TEST_INPUT_DETAIL_1 = "DETField 1.01Field 1.02Field 1.0320110630Field 1.04400821";
+  // private static final String TEST_INPUT_DETAIL_2 = "DETField 2.01Field 2.02Field 2.0320110630Field 2.04400821";
+  // private static final String TEST_INPUT_DETAIL_3 = "DETField 2.01Field 2.02Field 2.0320110630Field 2.04400821";
 
   private static final String KEY_ISSUE_2661_INPUT =
       "FlatfileTransformService.issue2661.input";
@@ -70,14 +76,6 @@ public class FlatfileTransformTest extends TransformServiceExample {
   // Get's TRL from the TEST_INPUT_TRAILER_
   private static final String XPATH_TRL_RECORD_TYPE = "/root/segment_Document/segment_Trailer/record_TRL/RecordType";
   private static final String XPATH_HDR_SOURCE_DESCRIPTION = "/root/segment_Document/segment_Header/record_HDR/SourceDescription";
-
-  public FlatfileTransformTest() {
-    super();
-  }
-
-  @Before
-  public void setUp() throws Exception {
-  }
 
   @Test
   public void testDoService() throws Exception {
@@ -101,8 +99,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
       assertEquals(m1.getContent(), m2.getContent());
       assertXml(m1);
       assertXml(m2);
-    }
-    finally {
+    } finally {
       stop(service);
     }
   }
@@ -120,8 +117,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
       service.doService(m2);
       assertEquals(m1.getContent(), m2.getContent());
       assertXml(m1);
-    }
-    finally {
+    } finally {
       stop(service);
     }
   }
@@ -143,8 +139,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     service.setCacheTransforms(true);
     try {
       execute(service, msg);
-    }
-    catch (ServiceException expected) {
+    } catch (ServiceException expected) {
       ;
     }
   }
@@ -176,8 +171,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
       assertEquals(m1.getContent(), m2.getContent());
       assertXml(m1);
       assertXml(m2);
-    }
-    finally {
+    } finally {
       stop(service);
     }
   }
@@ -188,12 +182,10 @@ public class FlatfileTransformTest extends TransformServiceExample {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
     service.setAllowOverride(true);
     service.setCacheTransforms(true);
-    try {
+
+    assertThrows(ServiceException.class, ()->{
       execute(service, msg);
-    }
-    catch (ServiceException expected) {
-      ;
-    }
+    });
   }
 
   @Test
@@ -204,7 +196,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     AdaptrisMessage msg =
         MessageHelper.createMessage(factory, PROPERTIES.getProperty(KEY_FF_TEST_INPUT_ISO));
     execute(service, msg);
-    Document doc = XmlHelper.createDocument(msg, false);
+    Document doc = createDocument(msg);
     XPath xp = new XPath();
     xp.selectSingleTextItem(doc, XPATH_HDR_SOURCE_DESCRIPTION);
     assertNotSame(createISOString(7), xp.selectSingleTextItem(doc, XPATH_HDR_SOURCE_DESCRIPTION));
@@ -219,7 +211,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     AdaptrisMessage msg =
         MessageHelper.createMessage(factory, PROPERTIES.getProperty(KEY_FF_TEST_INPUT_ISO));
     execute(service, msg);
-    Document doc = XmlHelper.createDocument(msg, false);
+    Document doc = createDocument(msg);
     XPath xp = new XPath();
     xp.selectSingleTextItem(doc, XPATH_HDR_SOURCE_DESCRIPTION);
     assertEquals(createISOString(7), xp.selectSingleTextItem(doc, XPATH_HDR_SOURCE_DESCRIPTION));
@@ -258,23 +250,19 @@ public class FlatfileTransformTest extends TransformServiceExample {
     createExpectedValueFor2661();
 
     assertEquals(ISO_8859_1, msg.getContentEncoding());
-    try {
+    SAXParseException exception = assertThrows("Really should have failed, UTF-8 should allow you to do this.", SAXParseException.class, ()->{
       createDocument(msg.getPayload());
-      // Should fail.
-      fail("Really should have failed, UTF-8 should allow you to do this.");
-    }
-    catch (SAXParseException e) {
-      assertEquals("Invalid byte 2 of 3-byte UTF-8 sequence.", e.getMessage());
-    }
+    });
+    assertEquals("Invalid byte 2 of 3-byte UTF-8 sequence.", exception.getMessage());
   }
 
   private String createExpectedValueFor2661() {
     Charset iso8859 = Charset.forName(ISO_8859_1);
     ByteBuffer input2 = ByteBuffer.wrap(new byte[]
-    {
-        (byte) 0x48, (byte) 0xe4, (byte) 0x75, (byte) 0x73, (byte) 0x6C, (byte) 0x65, (byte) 0x73, (byte) 0xE4, (byte) 0x63,
-        (byte) 0x6B, (byte) 0x65, (byte) 0x72, (byte) 0x20, (byte) 0x37,
-    });
+        {
+            (byte) 0x48, (byte) 0xe4, (byte) 0x75, (byte) 0x73, (byte) 0x6C, (byte) 0x65, (byte) 0x73, (byte) 0xE4, (byte) 0x63,
+            (byte) 0x6B, (byte) 0x65, (byte) 0x72, (byte) 0x20, (byte) 0x37,
+        });
     CharBuffer d3 = iso8859.decode(input2);
     return d3.toString();
   }
@@ -291,10 +279,14 @@ public class FlatfileTransformTest extends TransformServiceExample {
   }
 
   private void assertXml(AdaptrisMessage msg) throws Exception {
-    Document doc = XmlHelper.createDocument(msg, false);
+    Document doc = createDocument(msg);
     XPath xp = new XPath();
     assertEquals("HDR", xp.selectSingleTextItem(doc, XPATH_HDR_RECORD_TYPE));
     assertEquals("TRL", xp.selectSingleTextItem(doc, XPATH_TRL_RECORD_TYPE));
+  }
+
+  private Document createDocument(AdaptrisMessage msg) throws ParserConfigurationException, IOException, SAXException {
+    return XmlHelper.createDocument(msg, DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(false));
   }
 
   private String createISOString(int size) {
@@ -320,8 +312,4 @@ public class FlatfileTransformTest extends TransformServiceExample {
     return builder.parse(new InputSource(in));
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 }
