@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.transform.ff;
 
@@ -43,7 +43,7 @@ public class FfTransform extends TransformFramework {
   private DocumentBuilder db;
 
   protected SimpleDateFormat formatter =
-    new SimpleDateFormat("':'yyMMdd':'hh.mm.ss':'");
+      new SimpleDateFormat("':'yyMMdd':'hh.mm.ss':'");
 
 
   public FfTransform() throws Exception {
@@ -58,9 +58,9 @@ public class FfTransform extends TransformFramework {
    * <code>FfTransform</code> object either through a previous invocation of the <code>transform</code> method or through invoking
    * {@link #addRule(Source)}. The following pseudo-code illustrates the logic applied:
    * </p>
-   * 
+   *
    * <pre>
-   * {@code 
+   * {@code
    * check if rule has already been added
    *
    * if rule found then
@@ -75,29 +75,29 @@ public class FfTransform extends TransformFramework {
    * transform input using this optimised rule
    * }
    * </pre>
-   * 
+   *
    * <p>
    * In performing the above, the <code>transform</code> method will always attempt to locate a previously optimised rule that is
    * contained within.
    * </p>
-   * 
+   *
    * <p>
    * If the caller requires that the <code>rule</code> is to be optimised irrespective of whether it is already contained within the
    * object, then it must first be removed using either {@link #removeRule(Source)}, {@link #removeRule(int)} or
    * {@link #removeRules()}.
    * </p>
-   * 
+   *
    * <p>
    * Note that the <code>FfTransform</code> object must not be reused until the <code>transform</code> method synchronously returns
    * to the caller.
    * </p>
-   * 
+   *
    * @param in the input source.
    * @param rule the rule for the transformation.
    * @param out the output.
-   * 
+   *
    * @throws Exception when an error is detected processing the inputs.
-   * 
+   *
    * @see #addRule(Source)
    * @see #removeRule(Source)
    * @see #indexOfRule(Source)
@@ -113,8 +113,8 @@ public class FfTransform extends TransformFramework {
     // First ascertain if the rule has already been added to the object.
     // If it has then use the optimised form, otherwise optimise it and add
     // the rule to the internal list.
-    if (!(super.ruleList.containsKey(rule))) {
-      this.addRule(rule);
+    if (!super.ruleList.containsKey(rule)) {
+      addRule(rule);
     }
 
     // Getting to this point, we know we have the optimised version of
@@ -171,8 +171,8 @@ public class FfTransform extends TransformFramework {
   // The DocumentBuilder returned is used to parse the rule
   // (passed to the transform method) into its optimised format.
   private DocumentBuilder _getDocumentBuilder() throws ParserConfigurationException {
-      return DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true)
-          .newDocumentBuilder(DocumentBuilderFactory.newInstance());
+    return DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true)
+        .newDocumentBuilder(DocumentBuilderFactory.newInstance());
   }
 
-} // class FfTransform
+}

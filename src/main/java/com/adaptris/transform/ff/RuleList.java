@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.transform.ff;
 
@@ -55,12 +55,12 @@ public class RuleList {
   /**
    * <p>The underlying implementation to contain rules.</p>
    */
-  private ArrayList<Source> ruleKeys = new ArrayList<Source>();
+  private ArrayList<Source> ruleKeys = new ArrayList<>();
 
   /**
    * <p>The underlying implementation to contain rules.</p>
    */
-  private ArrayList<Object> ruleValues = new ArrayList<Object>();
+  private ArrayList<Object> ruleValues = new ArrayList<>();
 
   /**
    * <p>Zero-argument default constructor.</p>
@@ -113,8 +113,9 @@ public class RuleList {
   public Object getValue(Source key) {
     int i = indexOfKey(key);
 
-    if (i >= 0)
+    if (i >= 0) {
       return getValue(i);
+    }
 
     return null;
   }
@@ -185,7 +186,7 @@ public class RuleList {
   }
 
   /**
-   * <p>Returns the index position of a rule key-value pair in 
+   * <p>Returns the index position of a rule key-value pair in
    * <code>RuleList</code>.</p>
    *
    * @param  key the rule key.
@@ -222,4 +223,4 @@ public class RuleList {
     return ruleKeys.size();
   }
 
-} // class RuleList
+}

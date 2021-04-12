@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.transform.flatfile;
 
@@ -21,7 +21,9 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -44,9 +46,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * Flat file transformation service.
  * </p>
- * 
+ *
  * @config flat-file-transform-service
- * 
+ *
  */
 @XStreamAlias("flat-file-transform-service")
 @AdapterComponent
@@ -79,7 +81,7 @@ public class FlatfileTransformService extends ServiceImp {
   public FlatfileTransformService() {
     super();
     setMetadataKey(CoreConstants.TRANSFORM_OVERRIDE);
-    cachedRules = new ArrayList<Source>();
+    cachedRules = new ArrayList<>();
   }
 
   @Override
@@ -104,9 +106,9 @@ public class FlatfileTransformService extends ServiceImp {
 
   @Override
   protected final void closeService() {
-    Iterator i = cachedRules.iterator();
+    Iterator<Source> i = cachedRules.iterator();
     while (i.hasNext()) {
-      Source src = (Source) i.next();
+      Source src = i.next();
       tf.removeRule(src);
     }
   }
@@ -145,12 +147,10 @@ public class FlatfileTransformService extends ServiceImp {
         if (!cacheTransforms()) {
           tf.removeRule(currentRule);
         }
-      }
-      else {
+      } else {
         throw new ServiceException("no transform could be applied");
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }
@@ -281,7 +281,7 @@ public class FlatfileTransformService extends ServiceImp {
    * transformation definition; e.g. the input message is physically encoded using ISO-8859-1; but your xslt has &lt;<root
    * encoding="utf-8"> and you need to ensure that the message is physically encoded using UTF-8
    * </p>
-   * 
+   *
    * @param s
    */
   public void setOutputMessageEncoding(String s) {
