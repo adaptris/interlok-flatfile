@@ -291,7 +291,7 @@ public class FlatfileTransformService extends ServiceImp {
   /**<p>
    * Create the appropriate transform framework.
    * </p>
-   * @return a transform framework
+   * @return a transformframework
    * @throws Exception on error.
    */
   protected TransformFramework createFramework() throws Exception {
