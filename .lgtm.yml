@@ -1,0 +1,20 @@
+extraction:
+  java:
+    index:
+      java_version: 17
+      gradle:
+        version: 7.6.1
+
+path_classifiers:
+  docs:
+    - "LICENSE*"
+    - "*.md"
+    - "*.html"
+  ci:
+    - "appveyor.yml"
+    - ".codecov.yml"
+    - ".travis.yml"
+    - ".circleci"
+    - ".dependabot"
+    - ".github"
+    - ".lgtm.yml"
