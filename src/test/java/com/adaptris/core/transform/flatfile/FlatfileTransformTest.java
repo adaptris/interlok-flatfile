@@ -16,9 +16,9 @@
 
 package com.adaptris.core.transform.flatfile;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,7 +30,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -250,9 +250,9 @@ public class FlatfileTransformTest extends TransformServiceExample {
     createExpectedValueFor2661();
 
     assertEquals(ISO_8859_1, msg.getContentEncoding());
-    SAXParseException exception = assertThrows("Really should have failed, UTF-8 should allow you to do this.", SAXParseException.class, ()->{
+    SAXParseException exception = assertThrows(SAXParseException.class, ()->{
       createDocument(msg.getPayload());
-    });
+    }, "Really should have failed, UTF-8 should allow you to do this.");
     assertEquals("Invalid byte 2 of 3-byte UTF-8 sequence.", exception.getMessage());
   }
 
