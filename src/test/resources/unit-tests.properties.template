@@ -4,6 +4,7 @@ ProducerCase.baseDir=@BUILD_DIR@/examples/producers
 WorkflowCase.baseDir=@BUILD_DIR@/examples/workflows
 
 FlatfileTransformService.stylesheet=file:///@BASE_DIR@/src/test/resources/transform/ff.definition.xml
+FlatfileTransformService.stylesheet-with-doctype=file:///@BASE_DIR@/src/test/resources/transform/ff.definition-with-doctype.xml
 FlatfileTransformService.inputFile=@BASE_DIR@/src/test/resources/transform/ff.input.txt
 FlatfileTransformService.inputFile_ISO_8859=@BASE_DIR@/src/test/resources/transform/ff.input.iso8859.txt
 FlatfileTransformService.issue2661.input=@BASE_DIR@/src/test/resources/transform/issue2661.csv

@@ -38,6 +38,7 @@ import org.xml.sax.SAXParseException;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.lms.FileBackedMessageFactory;
@@ -52,6 +53,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
   private static final String ISO_8859_1 = "ISO-8859-1";
   private static final String UTF_8 = "UTF-8";
   static final String KEY_FF_TEST_DEFINITION = "FlatfileTransformService.stylesheet";
+  static final String KEY_FF_TEST_DEFINITION_WITH_DOCTYPE = "FlatfileTransformService.stylesheet-with-doctype";
   static final String KEY_FF_TEST_INPUT = "FlatfileTransformService.inputFile";
   static final String KEY_FF_TEST_INPUT_ISO = "FlatfileTransformService.inputFile_ISO_8859";
 
@@ -65,10 +67,8 @@ public class FlatfileTransformTest extends TransformServiceExample {
   // private static final String TEST_INPUT_DETAIL_2 = "DETField 2.01Field 2.02Field 2.0320110630Field 2.04400821";
   // private static final String TEST_INPUT_DETAIL_3 = "DETField 2.01Field 2.02Field 2.0320110630Field 2.04400821";
 
-  private static final String KEY_ISSUE_2661_INPUT =
-      "FlatfileTransformService.issue2661.input";
-  private static final String KEY_ISSUE_2661_DEFINITION =
-      "FlatfileTransformService.issue2661.definition";
+  private static final String KEY_ISSUE_2661_INPUT = "FlatfileTransformService.issue2661.input";
+  private static final String KEY_ISSUE_2661_DEFINITION = "FlatfileTransformService.issue2661.definition";
   private static final String ISSUE_2661_XPATH = "/root/segment_shipto_line/record_[1]/Street";
 
   // Get's HDR from the TEST_INPUT_HDR_LINE
@@ -81,6 +81,27 @@ public class FlatfileTransformTest extends TransformServiceExample {
   public void testDoService() throws Exception {
     AdaptrisMessage m = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
     FlatfileTransformService service = createService();
+    execute(service, m);
+    assertXml(m);
+  }
+
+  @Test
+  public void testDoServiceWithDoctypeNotAllowed() throws Exception {
+    AdaptrisMessage m = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
+    FlatfileTransformService service = createService();
+    service.setUrl(PROPERTIES.getProperty(KEY_FF_TEST_DEFINITION_WITH_DOCTYPE));
+    CoreException exception = assertThrows(CoreException.class, () -> execute(service, m));
+    assertTrue(exception.getCause() instanceof SAXParseException);
+  }
+
+  @Test
+  public void testDoServiceWithDoctypeAllowed() throws Exception {
+    AdaptrisMessage m = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
+    FlatfileTransformService service = createService();
+    DocumentBuilderFactoryBuilder docBuilderFactoryBuilder = new DocumentBuilderFactoryBuilder()
+        .addFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+    service.setXmlDocumentFactoryConfig(docBuilderFactoryBuilder);
+    service.setUrl(PROPERTIES.getProperty(KEY_FF_TEST_DEFINITION_WITH_DOCTYPE));
     execute(service, m);
     assertXml(m);
   }
@@ -124,8 +145,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
 
   @Test
   public void testDoServiceFileBackedMessage() throws Exception {
-    AdaptrisMessage m = MessageHelper.createMessage(new FileBackedMessageFactory(),
-        PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
+    AdaptrisMessage m = MessageHelper.createMessage(new FileBackedMessageFactory(), PROPERTIES.getProperty(KEY_FF_TEST_INPUT));
     FlatfileTransformService service = createService();
     execute(service, m);
     assertXml(m);
@@ -140,7 +160,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     try {
       execute(service, msg);
     } catch (ServiceException expected) {
-      ;
+
     }
   }
 
@@ -183,7 +203,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     service.setAllowOverride(true);
     service.setCacheTransforms(true);
 
-    assertThrows(ServiceException.class, ()->{
+    assertThrows(ServiceException.class, () -> {
       execute(service, msg);
     });
   }
@@ -193,8 +213,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     FlatfileTransformService service = createService();
     DefaultMessageFactory factory = new DefaultMessageFactory();
     factory.setDefaultCharEncoding(UTF_8);
-    AdaptrisMessage msg =
-        MessageHelper.createMessage(factory, PROPERTIES.getProperty(KEY_FF_TEST_INPUT_ISO));
+    AdaptrisMessage msg = MessageHelper.createMessage(factory, PROPERTIES.getProperty(KEY_FF_TEST_INPUT_ISO));
     execute(service, msg);
     Document doc = createDocument(msg);
     XPath xp = new XPath();
@@ -208,8 +227,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     FlatfileTransformService service = createService();
     DefaultMessageFactory factory = new DefaultMessageFactory();
     factory.setDefaultCharEncoding(ISO_8859_1);
-    AdaptrisMessage msg =
-        MessageHelper.createMessage(factory, PROPERTIES.getProperty(KEY_FF_TEST_INPUT_ISO));
+    AdaptrisMessage msg = MessageHelper.createMessage(factory, PROPERTIES.getProperty(KEY_FF_TEST_INPUT_ISO));
     execute(service, msg);
     Document doc = createDocument(msg);
     XPath xp = new XPath();
@@ -224,8 +242,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     service.setOutputMessageEncoding(UTF_8);
     DefaultMessageFactory factory = new DefaultMessageFactory();
     factory.setDefaultCharEncoding(ISO_8859_1);
-    AdaptrisMessage msg =
-        MessageHelper.createMessage(factory, PROPERTIES.getProperty(KEY_ISSUE_2661_INPUT));
+    AdaptrisMessage msg = MessageHelper.createMessage(factory, PROPERTIES.getProperty(KEY_ISSUE_2661_INPUT));
 
     execute(service, msg);
     String srcValue = createExpectedValueFor2661();
@@ -243,8 +260,7 @@ public class FlatfileTransformTest extends TransformServiceExample {
     service.setUrl(PROPERTIES.getProperty(KEY_ISSUE_2661_DEFINITION));
     DefaultMessageFactory factory = new DefaultMessageFactory();
     factory.setDefaultCharEncoding(ISO_8859_1);
-    AdaptrisMessage msg =
-        MessageHelper.createMessage(factory, PROPERTIES.getProperty(KEY_ISSUE_2661_INPUT));
+    AdaptrisMessage msg = MessageHelper.createMessage(factory, PROPERTIES.getProperty(KEY_ISSUE_2661_INPUT));
 
     execute(service, msg);
     createExpectedValueFor2661();
