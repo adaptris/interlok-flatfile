@@ -22,6 +22,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -35,6 +39,7 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.transform.ff.FfTransform;
 import com.adaptris.transform.ff.Source;
@@ -64,6 +69,12 @@ public class FlatfileTransformService extends ServiceImp {
   private transient List<Source> cachedRules;
   private transient Source configuredRule;
   private transient TransformFramework tf;
+  /**
+   * Configuration for the XML transform file
+   */
+  @AdvancedConfig(rare = true)
+  @Valid
+  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   @AdvancedConfig
   @InputFieldDefault(value = "true")
   private Boolean cacheTransforms;
@@ -295,6 +306,24 @@ public class FlatfileTransformService extends ServiceImp {
    * @throws Exception on error.
    */
   protected TransformFramework createFramework() throws Exception {
-    return new FfTransform();
+    return new FfTransform(docBuilder());
   }
+  
+  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+    return xmlDocumentFactoryConfig;
+  }
+
+  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+    xmlDocumentFactoryConfig = xml;
+  }
+
+  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
+  }
+
+  private DocumentBuilder docBuilder() throws ParserConfigurationException {
+    DocumentBuilderFactoryBuilder docFactoryBuilder = documentFactoryBuilder();
+    return docFactoryBuilder.newDocumentBuilder(docFactoryBuilder.build());
+  }
+  
 }
