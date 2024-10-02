@@ -275,11 +275,15 @@ public class FlatfileTransformTest extends TransformServiceExample {
 
   private String createExpectedValueFor2661() {
     Charset iso8859 = Charset.forName(ISO_8859_1);
-    ByteBuffer input2 = ByteBuffer.wrap(new byte[] { (byte) 0x48, (byte) 0xe4, (byte) 0x75, (byte) 0x73, (byte) 0x6C, (byte) 0x65,
-        (byte) 0x73, (byte) 0xE4, (byte) 0x63, (byte) 0x6B, (byte) 0x65, (byte) 0x72, (byte) 0x20, (byte) 0x37, });
+    ByteBuffer input2 = ByteBuffer.wrap(new byte[]
+        {
+            (byte) 0x48, (byte) 0xe4, (byte) 0x75, (byte) 0x73, (byte) 0x6C, (byte) 0x65, (byte) 0x73, (byte) 0xE4, (byte) 0x63,
+            (byte) 0x6B, (byte) 0x65, (byte) 0x72, (byte) 0x20, (byte) 0x37,
+        });
     CharBuffer d3 = iso8859.decode(input2);
     return d3.toString();
   }
+
 
   @Override
   protected FlatfileTransformService retrieveObjectForSampleConfig() {
