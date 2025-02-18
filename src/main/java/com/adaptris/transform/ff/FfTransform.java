@@ -23,15 +23,12 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 
 /**
  * <p>Performs transformations of data where the source is a flat file.</p>
@@ -46,9 +43,8 @@ public class FfTransform extends TransformFramework {
       new SimpleDateFormat("':'yyMMdd':'hh.mm.ss':'");
 
 
-  public FfTransform() throws Exception {
-    super();
-    db = _getDocumentBuilder();
+  public FfTransform(DocumentBuilder db) throws Exception {
+    this.db = db;
     // db is used to parse rule into its optimised form
   }
 
@@ -148,7 +144,7 @@ public class FfTransform extends TransformFramework {
       log.debug("addRule() invoked: rule <" + rule + ">");
     }
 
-    super.ruleList.add(rule, new RootHandler(_optimiseRule(db, rule)));
+    ruleList.add(rule, new RootHandler(_optimiseRule(db, rule)));
   }
 
   // This functionality has deliberately been left out of
@@ -161,18 +157,11 @@ public class FfTransform extends TransformFramework {
     throw new RuntimeException("FfTransform: input has not been initialised");
   }
 
-  private Element _optimiseRule(DocumentBuilder db, Source rule)
+  private Element _optimiseRule(DocumentBuilder documentBuilder, Source rule)
       throws SAXException, IOException, URISyntaxException {
-    Document output = db.parse(rule.getInputSource());
+    Document output = documentBuilder.parse(rule.getInputSource());
     Element optimisedRule = output.getDocumentElement();
     return optimisedRule;
-  }
-
-  // The DocumentBuilder returned is used to parse the rule
-  // (passed to the transform method) into its optimised format.
-  private DocumentBuilder _getDocumentBuilder() throws ParserConfigurationException {
-    return DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true)
-        .newDocumentBuilder(DocumentBuilderFactory.newInstance());
   }
 
 }
