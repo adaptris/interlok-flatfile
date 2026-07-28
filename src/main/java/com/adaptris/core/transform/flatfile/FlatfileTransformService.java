@@ -137,7 +137,7 @@ public class FlatfileTransformService extends ServiceImp {
   @Override
   public final void doService(AdaptrisMessage msg) throws ServiceException {
 
-    try (Reader in = msg.getReader(); Writer output = msg.getWriter(getOutputMessageEncoding())) {
+    try (Reader in = msg.getReader(); Writer output = (getOutputMessageEncoding() != null) ? msg.getWriter(getOutputMessageEncoding()) : msg.getWriter()) {
       Source src = new Source(in);
       Target dst = new Target(output);
 
